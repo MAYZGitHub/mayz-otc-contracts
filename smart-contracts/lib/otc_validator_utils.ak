@@ -7,7 +7,7 @@ use utils.{
   add_lovelace, check_if_otc_nft_is_present_in_inputs,
   check_value_sent_to_signer, check_value_sent_to_wallet, get_otc_from_inputs,
   get_otc_from_outputs, get_otc_with_outref_from_inputs, get_redeemer_of,
-  is_close_or_cancel, is_signed_by_creator,
+  is_close_or_cancel, is_signed_by_creator, normalize_otc_datum,
 }
 
 /// Initialize OTC position by minting OTC ID token. Runs along MintNFT redeemer
@@ -309,6 +309,8 @@ pub fn validate_update_min_ada(
     // Value validations
     otc_Out.value == otc_Out_Value_Control,
     // Datum validations
-    otcDatum_Out == otcDatum_Out_Control,
+    normalize_otc_datum(otcDatum_Out) == normalize_otc_datum(
+      otcDatum_Out_Control,
+    ),
   }
 }

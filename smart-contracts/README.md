@@ -70,7 +70,7 @@ aikup
 export PATH="/home/manuelpadilla/.aiken/bin:$PATH"
 
 # Build the project
-aiken build
+aiken build --trace-level verbose
 
 # Run tests (when you have them)
 aiken check

@@ -1,10 +1,12 @@
+// use aiken/cbor
 use aiken/collection/list
 use cardano/assets.{PolicyId, from_asset_list, quantity_of}
 use cardano/transaction.{Input, Output, Transaction}
 use types.{ProtocolDatum, ProtocolParams}
 use utils.{
   add_lovelace, get_protocol_from_inputs, get_protocol_from_outputs,
-  is_admin_auth, validate_protocol_params,
+  is_admin_auth, normalize_protocol_datum, sort_vkeyhashes,
+  validate_protocol_params,
 }
 
 /// Validates the creation of a new protocol instance
@@ -40,14 +42,13 @@ pub fn validate_create(
       params.pp_protocol_id_tn,
       1,
     )
-
   // Control values for validation
   let protocolDatum_Out_Control = protocolDatum_Out
+
   let protocol_Out_Value_Control =
     [Pair(protocol_policy_id, [Pair(params.pp_protocol_id_tn, 1)])]
       |> from_asset_list()
       |> add_lovelace(protocolDatum_Out.pd_min_ada)
-
   and {
     // Must mint exactly one Protocol ID token
     quantity_of(transaction.mint, protocol_policy_id, params.pp_protocol_id_tn) == 1,
@@ -56,7 +57,9 @@ pub fn validate_create(
     // Output value must match expected control value
     protocol_Out.value == protocol_Out_Value_Control,
     // Output datum must match control datum
-    protocolDatum_Out == protocolDatum_Out_Control,
+    normalize_protocol_datum(protocolDatum_Out) == normalize_protocol_datum(
+      protocolDatum_Out_Control,
+    ),
   }
 }
 
@@ -69,6 +72,7 @@ pub fn validate_update_params(
   transaction: Transaction,
 ) -> Bool {
   // Must have exactly one protocol input
+
   expect Some((protocol_In, _)) =
     get_protocol_from_inputs(
       transaction,
@@ -94,10 +98,38 @@ pub fn validate_update_params(
     ProtocolDatum {
       ..protocolDatum_Out,
       pd_min_ada: protocolDatum_In.pd_min_ada,
+      pd_admins: sort_vkeyhashes(protocolDatum_Out.pd_admins),
     }
+
   // Value must remain unchanged
   let protocol_Out_Value_Control = protocol_In.value
 
+  // trace @"true": True
+  // trace @"false": False
+  // trace @"actual_admins_out": protocolDatum_Out.pd_admins
+  // trace @"sorted_admins_control": sort_vkeyhashes(protocolDatum_Out.pd_admins)
+  // trace @"protocolDatum_Out_Control": protocolDatum_Out_Control
+  // trace @"protocolDatum_Out": protocolDatum_Out
+  // trace @"protocolDatum_Out == protocolDatum_Out_Control": protocolDatum_Out == protocolDatum_Out_Control
+  // trace @"protocolDatum_In == protocolDatum_Out": protocolDatum_In == protocolDatum_Out
+  // trace @"cbor.serialise protocolDatum_Out == protocolDatum_Out_Control": cbor.serialise(
+  //   protocolDatum_Out,
+  // ) == cbor.serialise(protocolDatum_Out_Control)
+  // trace @"cbor.serialise protocolDatum_In ": cbor.serialise(protocolDatum_In)
+  // trace @"cbor.serialise protocolDatum_Out ": cbor.serialise(protocolDatum_Out)
+  // trace @"cbor.serialise pprotocolDatum_Out_Control": cbor.serialise(
+  //   protocolDatum_Out_Control,
+  // )
+  // trace @"bytearray.compare cbor.serialise protocolDatum_Out == protocolDatum_Out_Control": bytearray.compare(
+  //   cbor.serialise(protocolDatum_Out),
+  //   cbor.serialise(protocolDatum_Out_Control),
+  // ) == Equal
+  trace @"authorized": authorized
+  trace @"validate_protocol_params": validate_protocol_params(protocolDatum_Out)
+  trace @"protocol_Out.value == protocol_Out_Value_Control": protocol_Out.value == protocol_Out_Value_Control
+  trace @"protocolDatum_Out == protocolDatum_Out_Control": normalize_protocol_datum(
+    protocolDatum_Out,
+  ) == normalize_protocol_datum(protocolDatum_Out_Control)
   and {
     authorized,
     // New parameters must be valid
@@ -105,7 +137,9 @@ pub fn validate_update_params(
     // Output value must match input value
     protocol_Out.value == protocol_Out_Value_Control,
     // Output datum must match control datum
-    protocolDatum_Out == protocolDatum_Out_Control,
+    normalize_protocol_datum(protocolDatum_Out) == normalize_protocol_datum(
+      protocolDatum_Out_Control,
+    ),
   }
 }
 
@@ -147,6 +181,12 @@ pub fn validate_update_min_ada(
     protocol_In.value
       |> add_lovelace(-protocolDatum_In.pd_min_ada + new_min_ada)
 
+  trace @"authorized": authorized
+  trace @"validate_protocol_params": validate_protocol_params(protocolDatum_Out)
+  trace @"protocol_Out.value == protocol_Out_Value_Control": protocol_Out.value == protocol_Out_Value_Control
+  trace @"protocolDatum_Out == protocolDatum_Out_Control": normalize_protocol_datum(
+    protocolDatum_Out,
+  ) == normalize_protocol_datum(protocolDatum_Out_Control)
   and {
     authorized,
     // Parameters must remain valid
@@ -154,6 +194,8 @@ pub fn validate_update_min_ada(
     // Output value must match control with updated ADA
     protocol_Out.value == protocol_Out_Value_Control,
     // Output datum must match control
-    protocolDatum_Out == protocolDatum_Out_Control,
+    normalize_protocol_datum(protocolDatum_Out) == normalize_protocol_datum(
+      protocolDatum_Out_Control,
+    ),
   }
 }

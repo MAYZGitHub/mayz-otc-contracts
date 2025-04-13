@@ -18,6 +18,6 @@ validator otc_nft_policy(params: OTCNFTParams) {
   }
 
   else(_) {
-    fail
+    fail @"Invalid Use of OTC NFT Policy"
   }
 }

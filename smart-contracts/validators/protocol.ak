@@ -1,6 +1,7 @@
-use aiken/crypto.{ScriptHash}
+use aiken/collection/list
+use cardano/address.{Address, Script}
 use cardano/assets.{PolicyId}
-use cardano/transaction.{Transaction}
+use cardano/transaction.{Input, Output, OutputReference, Transaction}
 use protocol_utils.{
   validate_create, validate_update_min_ada, validate_update_params,
 }
@@ -14,10 +15,22 @@ validator protocol(params: ProtocolParams) {
   spend(
     datum: Option<ProtocolDatum>,
     redeemer: ProtocolRedeemer,
-    script_hash: ScriptHash,
+    own_ref: OutputReference,
     transaction: Transaction,
   ) {
-    let protocol_policy_id = script_hash
+    let Transaction { inputs, .. } = transaction
+
+    expect Some(own_input) =
+      list.find(inputs, fn(input) { input.output_reference == own_ref })
+
+    let Input {
+      output: Output { address: Address { payment_credential, .. }, .. },
+      ..
+    } = own_input
+
+    expect Script(own_validator_hash) = payment_credential
+
+    let protocol_policy_id = own_validator_hash
 
     when datum is {
       Some(protocolDatum_In) ->
@@ -55,6 +68,6 @@ validator protocol(params: ProtocolParams) {
   }
 
   else(_) {
-    fail
+    fail @"Invalid Use of Protocol Validator"
   }
 }

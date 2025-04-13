@@ -4,7 +4,7 @@ use cardano/transaction.{Input, Transaction}
 use types.{OTCDatum, OTCNFTParams}
 use utils.{
   get_otc_from_inputs, get_otc_from_outputs, get_protocol_from_inputs_ref,
-  validate_otc_name,
+  normalize_otc_datum, validate_otc_name,
 }
 
 /// Validates minting of new OTC NFT token. Runs along CreateOTC redeemer
@@ -62,7 +62,9 @@ pub fn validate_mintNFT(
     // Minimum ADA validation
     otcDatum_Out.od_min_ada > 0,
     // Datum validations
-    otcDatum_Out == otcDatum_Out_Control,
+    normalize_otc_datum(otcDatum_Out) == normalize_otc_datum(
+      otcDatum_Out_Control,
+    ),
   }
 }
 

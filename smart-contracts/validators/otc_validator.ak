@@ -1,6 +1,7 @@
-use aiken/crypto.{ScriptHash}
+use aiken/collection/list
+use cardano/address.{Address, Script}
 use cardano/assets.{PolicyId}
-use cardano/transaction.{Transaction}
+use cardano/transaction.{Input, Output, OutputReference, Transaction}
 use otc_validator_utils.{
   validate_burnID, validate_cancel, validate_claim, validate_close,
   validate_mintID, validate_update_min_ada,
@@ -16,10 +17,22 @@ validator otc(params: OTCParams) {
   spend(
     datum: Option<OTCDatum>,
     redeemer: OTCRedeemer,
-    script_hash: ScriptHash,
+    own_ref: OutputReference,
     transaction: Transaction,
   ) {
-    let otc_validator_hash = script_hash
+    let Transaction { inputs, .. } = transaction
+
+    expect Some(own_input) =
+      list.find(inputs, fn(input) { input.output_reference == own_ref })
+
+    let Input {
+      output: Output { address: Address { payment_credential, .. }, .. },
+      ..
+    } = own_input
+
+    expect Script(own_validator_hash) = payment_credential
+
+    let otc_validator_hash = own_validator_hash
 
     when datum is {
       Some(otcDatum_In) ->
@@ -59,6 +72,6 @@ validator otc(params: OTCParams) {
   }
 
   else(_) {
-    fail
+    fail @"Invalid Use of OTC Validator"
   }
 }

@@ -317,7 +317,7 @@ pub fn validate_protocol_params(protocolDatum: ProtocolDatum) -> Bool {
   and {
     protocolDatum.pd_min_ada > 0,
     !list.is_empty(protocolDatum.pd_admins),
-    protocolDatum.pd_mayz_deposit_requirement > 0,
+    protocolDatum.pd_mayz_deposit_requirement >= 0,
     !bytearray.is_empty(protocolDatum.pd_token_admin_policy_id),
   }
 }
@@ -433,15 +433,6 @@ pub fn generate_otc_name(token_tn: ByteArray, amount: Int) -> ByteArray {
   let formatted_amount = format_large_number(amount)
   bytearray.concat(with_separator, formatted_amount)
 }
-
-// fn format_large_number(n: Int) -> ByteArray {
-//   let result = #""
-//   if n < 1000 {
-//     builtin.integer_to_bytearray(True, 0, n)
-//   } else {
-//     format_with_separators(n, result)
-//   }
-// }
 
 /// Format a large number into a readable string
 /// 
@@ -666,4 +657,56 @@ test prop_generate_otc_name_reversible(
 
   // Validate that the generated name matches the expected name
   expect name_as_hex == expected_name_hex
+}
+
+// Top-level recursive insert
+fn insert_vkeyhash(
+  x: VerificationKeyHash,
+  sorted: List<VerificationKeyHash>,
+) -> List<VerificationKeyHash> {
+  when sorted is {
+    [] -> [x]
+    [y, ..ys] ->
+      if bytearray.compare(x, y) == Less {
+        [x, y, ..ys]
+      } else {
+        [y, ..insert_vkeyhash(x, ys)]
+      }
+  }
+}
+
+// Top-level sort
+pub fn sort_vkeyhashes(
+  xs: List<VerificationKeyHash>,
+) -> List<VerificationKeyHash> {
+  when xs is {
+    [] -> []
+    [x, ..rest] -> insert_vkeyhash(x, sort_vkeyhashes(rest))
+  }
+}
+
+pub fn normalize_protocol_datum(d: ProtocolDatum) -> ProtocolDatum {
+  ProtocolDatum {
+    pd_admins: sort_vkeyhashes(d.pd_admins),
+    pd_token_admin_policy_id: d.pd_token_admin_policy_id,
+    pd_mayz_policy_id: d.pd_mayz_policy_id,
+    pd_mayz_tn: d.pd_mayz_tn,
+    pd_mayz_deposit_requirement: d.pd_mayz_deposit_requirement,
+    pd_min_ada: d.pd_min_ada,
+  }
+}
+
+pub fn normalize_otc_datum(d: OTCDatum) -> OTCDatum {
+  OTCDatum {
+    od_creator: d.od_creator,
+    od_otc_nft_policy_id: d.od_otc_nft_policy_id,
+    od_otc_nft_tn: d.od_otc_nft_tn,
+    od_token_policy_id: d.od_token_policy_id,
+    od_token_tn: d.od_token_tn,
+    od_token_amount: d.od_token_amount,
+    od_mayz_policy_id: d.od_mayz_policy_id,
+    od_mayz_tn: d.od_mayz_tn,
+    od_mayz_locked: d.od_mayz_locked,
+    od_min_ada: d.od_min_ada,
+  }
 }

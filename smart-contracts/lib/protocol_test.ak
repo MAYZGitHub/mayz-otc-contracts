@@ -1,3 +1,4 @@
+use aiken/cbor
 use aiken/fuzz
 use cardano/address.{Address, from_script, from_verification_key}
 use cardano/assets.{from_asset, merge}
@@ -5,7 +6,7 @@ use cardano/transaction.{InlineDatum, Input, NoDatum, Output, OutputReference}
 use protocol_utils.{
   validate_create, validate_update_min_ada, validate_update_params,
 }
-use types.{ProtocolDatum, ProtocolParams}
+use types.{ProtocolDatum, ProtocolParams, UpdateProtocolParams}
 use utils.{mock_transaction}
 
 type TestAssets {
@@ -250,7 +251,15 @@ test update_protocol_params() {
 
   // Create new datum with updated MAYZ deposit requirement
   let new_datum =
-    ProtocolDatum { ..old_datum, pd_mayz_deposit_requirement: 200 }
+    ProtocolDatum {
+      ..old_datum,
+      pd_admins: [
+        #"e41c67c53e593671792cc27f095bbcc69aaee2ff1b4d875bdbff5cab",
+        #"e43c67c53e593671792cc27f095bbcc69aaee2ff1b4d875bdbff5cab",
+        #"e42c67c53e593671792cc27f095bbcc69aaee2ff1b4d875bdbff5cab",
+      ],
+      pd_mayz_deposit_requirement: 200,
+    }
 
   // Create input with old datum
   let protocol_input =
@@ -287,6 +296,14 @@ test update_protocol_params() {
       from_asset(#"", #"", 0),
       [assets.admin_pubkey],
     )
+
+  // 🧪 Log: datum en CBOR hex
+  trace @"old_datum_cbor": cbor.serialise(old_datum)
+  trace @"new_datum_cbor": cbor.serialise(new_datum)
+
+  // 🧪 Log: redeemer en CBOR hex
+  let redeemer = UpdateProtocolParams
+  trace @"redeemer_cbor": cbor.serialise(redeemer)
 
   validate_update_params(params, protocol_policy_id, old_datum, transaction) == True
 }
@@ -402,4 +419,67 @@ test invalid_admin_auth() {
     new_min_ada,
     transaction,
   ) == False
+}
+
+test deserialise_protocol_datum_from_cbor() {
+  // // CBOR de un ProtocolDatum serializado (copiá el que te dio el log)
+  // let cbor_hex =
+  //   #"d8799f9f44deadbeefff5820000000000000000000000000000000000000000000000000000000000000000058205555555555555555555555555555555555555555555555555555555555555555444d41595a18641a001e8480ff"
+
+  // // Convertir el hexadecimal a bytearray
+  // let cbor_bytes = bytearray.from_hex(cbor_hex)?
+
+  // // Deserializar usando from_bytes con el decodificador adecuado
+  // expect Some(datum): Option<ProtocolDatum> =
+  //   cbor.from_bytes(cbor_bytes) |> decode_protocol_datum
+
+  // // 🧪 Verificamos los campos del datum
+  // trace @"deserialized_admins": datum.pd_admins
+  // trace @"mayz_policy_id": datum.pd_mayz_policy_id
+  // trace @"mayz_tn": datum.pd_mayz_tn
+  // trace @"mayz_deposit": datum.pd_mayz_deposit_requirement
+  // trace @"min_ada": datum.pd_min_ada
+
+  // // ✅ Test pasa si los campos clave son iguales a los esperados
+  // expect datum.pd_mayz_deposit_requirement == 100
+  // expect datum.pd_min_ada == 2000000
+
+  let datum =
+    ProtocolDatum {
+      pd_admins: [
+        #"e44c67c53e593671792cc27f095bbcc69aaee2ff1b4d875bdbff5cab",
+        #"e44c67c53e593671792cc27f095bbcc69aaee2ff1b4d875bdbff5cab",
+      ],
+      pd_token_admin_policy_id: #"e0b33937400326885f7186e2725a84786266ec1eb06d397680233f80",
+      pd_mayz_policy_id: #"e0b33937400326885f7186e2725a84786266ec1eb06d397680233f80",
+      pd_mayz_tn: #"4d41595a",
+      pd_mayz_deposit_requirement: 4444333,
+      pd_min_ada: 2274818,
+    }
+
+  trace @"ProtocolDatum_CBOR": cbor.serialise(datum)
+
+  // Expect no crash
+  expect True
+}
+
+test deserialise_protocol_datum_from_cbor2() {
+  let datum =
+    ProtocolDatum {
+      pd_admins: [
+        #"e44c67c53e593671792cc27f095bbcc69aaee2ff1b4d875bdbff5cab",
+        #"e44c67c53e593671792cc27f095bbcc69aaee2ff1b4d875bdbff5cab",
+        #"e44c67c53e593671792cc27f095bbcc69aaee2ff1b4d875bdbff5cab",
+      ],
+      pd_token_admin_policy_id: #"e0b33937400326885f7186e2725a84786266ec1eb06d397680233f80",
+      pd_mayz_policy_id: #"e0b33937400326885f7186e2725a84786266ec1eb06d397680233f80",
+      pd_mayz_tn: #"4d41595a",
+      pd_mayz_deposit_requirement: 4444333,
+      pd_min_ada: 1111,
+    }
+
+  trace @"ProtocolDatum_CBOR": cbor.serialise(datum)
+
+  // Expect no crash
+  expect True
 }
