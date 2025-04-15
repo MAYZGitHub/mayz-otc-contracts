@@ -49,17 +49,34 @@ pub fn validate_create(
     [Pair(protocol_policy_id, [Pair(params.pp_protocol_id_tn, 1)])]
       |> from_asset_list()
       |> add_lovelace(protocolDatum_Out.pd_min_ada)
-  and {
-    // Must mint exactly one Protocol ID token
-    quantity_of(transaction.mint, protocol_policy_id, params.pp_protocol_id_tn) == 1,
-    // Initial protocol parameters must be valid
-    validate_protocol_params(protocolDatum_Out),
-    // Output value must match expected control value
-    protocol_Out.value == protocol_Out_Value_Control,
-    // Output datum must match control datum
+
+  // Must mint exactly one Protocol ID token
+  let protocol_token_minted =
+    quantity_of(transaction.mint, protocol_policy_id, params.pp_protocol_id_tn) == 1
+  trace @"E1": protocol_token_minted
+
+  // Initial protocol parameters must be valid
+  let params_are_valid = validate_protocol_params(protocolDatum_Out)
+  trace @"E2": params_are_valid
+
+  // Output value must match expected control value
+  let value_is_correct = protocol_Out.value == protocol_Out_Value_Control
+  trace @"E3A": protocol_Out.value
+  trace @"E3C": protocol_Out_Value_Control
+  trace @"E3D": value_is_correct
+
+  // Output datum must match control datum
+  let datum_is_correct =
     normalize_protocol_datum(protocolDatum_Out) == normalize_protocol_datum(
       protocolDatum_Out_Control,
-    ),
+    )
+  trace @"E4": datum_is_correct
+
+  and {
+    protocol_token_minted,
+    params_are_valid,
+    value_is_correct,
+    datum_is_correct,
   }
 }
 

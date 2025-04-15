@@ -1,6 +1,7 @@
+use aiken/collection/list
 use aiken/crypto.{ScriptHash}
 use cardano/address.{from_script}
-use cardano/assets.{PolicyId, add, from_asset_list, quantity_of}
+use cardano/assets.{PolicyId, add, from_asset_list, merge, quantity_of, zero}
 use cardano/transaction.{Transaction}
 use types.{OTCDatum, OTCParams}
 use utils.{
@@ -33,6 +34,7 @@ pub fn validate_mintID(
 
   // Create the expected script address
   let expected_address = from_script(otc_validator_hash)
+
   // Control Value for creator output with OTC NFT token
   let creator_Value_Control =
     [
@@ -43,44 +45,72 @@ pub fn validate_mintID(
     ]
       |> from_asset_list()
 
-  let otc_Out_Value_Control =
+  let otc_values =
     [
-      // OTC ID token
-      Pair(otc_policy_id, [Pair(params.pp_otc_id_tn, 1)]),
-      // Underlying tokens
-      Pair(
-        otcDatum_Out.od_token_policy_id,
-        [Pair(otcDatum_Out.od_token_tn, otcDatum_Out.od_token_amount)],
+      from_asset_list([Pair(otc_policy_id, [Pair(params.pp_otc_id_tn, 1)])]),
+      from_asset_list(
+        [
+          Pair(
+            otcDatum_Out.od_token_policy_id,
+            [Pair(otcDatum_Out.od_token_tn, otcDatum_Out.od_token_amount)],
+          ),
+        ],
       ),
-      // MAYZ deposit
-      Pair(
-        otcDatum_Out.od_mayz_policy_id,
-        [Pair(otcDatum_Out.od_mayz_tn, otcDatum_Out.od_mayz_locked)],
+      from_asset_list(
+        [
+          Pair(
+            otcDatum_Out.od_mayz_policy_id,
+            [Pair(otcDatum_Out.od_mayz_tn, otcDatum_Out.od_mayz_locked)],
+          ),
+        ],
       ),
     ]
-      |> from_asset_list()
+
+  let otc_Out_Value_Control =
+    list.foldl(otc_values, zero, merge)
       |> add_lovelace(otcDatum_Out.od_min_ada)
 
-  // Datum validations are done in the OTC NFT Policy
-  and {
-    // Authorization check
-    is_signed_by_creator(transaction, otcDatum_Out.od_creator),
-    // Both OTC ID and NFT must be minted. With this we ensure that the OTC NFT Policy runs alongside the OTC Validator and ID Policy
-    quantity_of(transaction.mint, otc_policy_id, params.pp_otc_id_tn) == 1,
+  // Authorization check
+  let is_authorized = is_signed_by_creator(transaction, otcDatum_Out.od_creator)
+  trace @"E1": is_authorized
+
+  // Both OTC ID and NFT must be minted. With this we ensure that the OTC NFT Policy runs alongside the OTC Validator and ID Policy
+  let id_token_minted =
+    quantity_of(transaction.mint, otc_policy_id, params.pp_otc_id_tn) == 1
+  trace @"E2": id_token_minted
+
+  let nft_token_minted =
     quantity_of(
       transaction.mint,
       otcDatum_Out.od_otc_nft_policy_id,
       otcDatum_Out.od_otc_nft_tn,
-    ) == 1,
-    // Verify that the created UTXO goes to the expected address
-    otc_Out.address == expected_address,
+    ) == 1
+  trace @"E3": nft_token_minted
+
+  // Verify that the created UTXO goes to the expected address
+  let address_correct = otc_Out.address == expected_address
+  trace @"E4": address_correct
+
+  // Value validations
+  let value_to_creator_correct =
     check_value_sent_to_wallet(
       transaction,
       otcDatum_Out.od_creator,
       creator_Value_Control,
-    ),
-    // Value validations
-    otc_Out.value == otc_Out_Value_Control,
+    )
+  trace @"E5A": creator_Value_Control
+  trace @"E5": value_to_creator_correct
+
+  let value_correct = otc_Out.value == otc_Out_Value_Control
+  trace @"E6": value_correct
+
+  and {
+    is_authorized,
+    id_token_minted,
+    nft_token_minted,
+    address_correct,
+    value_to_creator_correct,
+    value_correct,
   }
 }
 
@@ -242,17 +272,24 @@ pub fn validate_cancel(
 
   // Control Value for creator output with all assets
   let creator_Value_Control =
-    [
-      Pair(
-        otcDatum_In.od_mayz_policy_id,
-        [Pair(otcDatum_In.od_mayz_tn, otcDatum_In.od_mayz_locked)],
+    merge(
+      from_asset_list(
+        [
+          Pair(
+            otcDatum_In.od_mayz_policy_id,
+            [Pair(otcDatum_In.od_mayz_tn, otcDatum_In.od_mayz_locked)],
+          ),
+        ],
       ),
-      Pair(
-        otcDatum_In.od_token_policy_id,
-        [Pair(otcDatum_In.od_token_tn, otcDatum_In.od_token_amount)],
+      from_asset_list(
+        [
+          Pair(
+            otcDatum_In.od_token_policy_id,
+            [Pair(otcDatum_In.od_token_tn, otcDatum_In.od_token_amount)],
+          ),
+        ],
       ),
-    ]
-      |> from_asset_list()
+    )
       |> add_lovelace(otcDatum_In.od_min_ada)
 
   and {

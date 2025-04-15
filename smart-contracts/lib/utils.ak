@@ -4,18 +4,81 @@ use aiken/collection/list
 use aiken/collection/pairs
 use aiken/crypto.{VerificationKeyHash}
 use aiken/fuzz
+use aiken/option
 use aiken/primitive/bytearray
 use aiken/primitive/int
 use aiken/primitive/string
 use cardano/address.{VerificationKey}
 use cardano/assets.{
-  PolicyId, Value, add, match, merge, quantity_of, tokens, zero,
+  AssetName, PolicyId, Value, add, flatten, match, merge, negate, quantity_of,
+  to_dict, tokens, zero,
 }
 use cardano/transaction.{
   InlineDatum, Input, Output, OutputReference, Redeemer, ScriptPurpose, Spend,
   Transaction,
 }
 use types.{CancelOTC, CloseOTC, OTCDatum, OTCRedeemer, ProtocolDatum}
+
+/// Flatten a Value and remove zero-quantity tokens
+pub fn flatten_clean(value: Value) -> List<(PolicyId, AssetName, Int)> {
+  flatten(value)
+    |> list.filter(fn((_, _, qty)) { qty != 0 })
+}
+
+/// Converts a flattened list into Dict<PolicyId, Dict<AssetName, Int>>
+pub fn flatten_to_dict(
+  entries: List<(PolicyId, AssetName, Int)>,
+) -> dict.Dict<PolicyId, dict.Dict<AssetName, Int>> {
+  list.foldl(
+    entries,
+    dict.empty,
+    fn((pid, tn, qty), acc) {
+      let current_group =
+        when dict.get(acc, pid) is {
+          Some(group) -> group
+          None -> dict.empty
+        }
+      let updated_group = dict.insert(current_group, tn, qty)
+      dict.insert(acc, pid, updated_group)
+    },
+  )
+}
+
+/// True if both values have the same non-zero tokens and quantities
+pub fn is_eq_value(a: Value, b: Value) -> Bool {
+  let a_dict = flatten_clean(a) |> flatten_to_dict
+  flatten_clean(b)
+    |> list.all(
+        fn((pid, tn, qty)) {
+          when dict.get(a_dict, pid) is {
+            Some(group) ->
+              when dict.get(group, tn) is {
+                Some(actual) -> actual == qty
+                None -> False
+              }
+            None -> False
+          }
+        },
+      )
+}
+
+/// True if all tokens in `must_have` are included in `base`
+pub fn is_include_value(base: Value, must_have: Value) -> Bool {
+  let base_dict = flatten_clean(base) |> flatten_to_dict
+  flatten_clean(must_have)
+    |> list.all(
+        fn((pid, tn, qty)) {
+          when dict.get(base_dict, pid) is {
+            Some(group) ->
+              when dict.get(group, tn) is {
+                Some(actual) -> actual >= qty
+                None -> False
+              }
+            None -> False
+          }
+        },
+      )
+}
 
 /// Get protocol datum from reference inputs
 /// Returns an Option containing the protocol output and datum if found
@@ -355,7 +418,7 @@ pub fn add_lovelace(v: Value, lovelace: Int) -> Value {
 pub fn check_value_sent_to_wallet(
   transaction: Transaction,
   wallet: VerificationKeyHash,
-  value: Value,
+  expected_value: Value,
 ) -> Bool {
   let wallet_value =
     list.filter(
@@ -369,8 +432,14 @@ pub fn check_value_sent_to_wallet(
     )
       |> list.map(fn(output) { output.value })
       |> list.foldl(zero, merge)
+  trace @"wallet_value": wallet_value
+  trace @"expected_value": expected_value
 
-  match(wallet_value, value, >=)
+  let is_included = is_include_value(wallet_value, expected_value)
+  trace @"is_included": is_included
+
+  is_included
+  // match(wallet_value, to_data(value), >=)
 }
 
 /// Check if a value is sent to the transaction signer
