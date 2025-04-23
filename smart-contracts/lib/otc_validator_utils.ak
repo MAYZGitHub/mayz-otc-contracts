@@ -188,21 +188,39 @@ pub fn validate_claim(
   // Control Datum: Must remain unchanged
   let otcDatum_Out_Control = otcDatum_In
 
-  and {
-    // Verify OTC NFT is present in inputs
+  // Verify OTC NFT is present in inputs
+  let otc_nft_present =
     check_if_otc_nft_is_present_in_inputs(
       transaction,
       otc_nft_policy_id,
       otcDatum_In.od_otc_nft_tn,
-    ),
-    // Verify that the created UTXO goes to the expected address
-    otc_Out.address == expected_address,
-    // Verify tokens are sent to buyer
-    check_value_sent_to_signer(transaction, buyer_Value_Control),
-    // Value validations
-    otc_Out.value == otc_Out_Value_Control,
-    // Datum validations
-    otcDatum_Out == otcDatum_Out_Control,
+    )
+  trace @"E1": otc_nft_present
+
+  // Verify that the created UTXO goes to the expected address
+  let address_correct = otc_Out.address == expected_address
+  trace @"E2": address_correct
+
+  // Verify tokens are sent to buyer
+  let value_sent_to_signer =
+    check_value_sent_to_signer(transaction, buyer_Value_Control)
+  trace @"E3A": buyer_Value_Control
+  trace @"E3": value_sent_to_signer
+
+  // Value validations
+  let value_correct = otc_Out.value == otc_Out_Value_Control
+  trace @"E4": value_correct
+
+  // Datum validations
+  let datum_unchanged = otcDatum_Out == otcDatum_Out_Control
+  trace @"E5": datum_unchanged
+
+  and {
+    otc_nft_present,
+    address_correct,
+    value_sent_to_signer,
+    value_correct,
+    datum_unchanged,
   }
 }
 

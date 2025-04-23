@@ -450,7 +450,7 @@ pub fn check_value_sent_to_wallet(
 /// * value - The minimum value that should be received
 pub fn check_value_sent_to_signer(
   transaction: Transaction,
-  value: Value,
+  expected_value: Value,
 ) -> Bool {
   let signer_value =
     list.filter(
@@ -466,7 +466,11 @@ pub fn check_value_sent_to_signer(
       |> list.map(fn(output) { output.value })
       |> list.foldl(zero, merge)
 
-  match(signer_value, value, >=)
+  let is_included = is_include_value(signer_value, expected_value)
+  trace @"is_included": is_included
+
+  is_included
+  // match(signer_value, value, >=)
 }
 
 /// Validate OTC token name format
