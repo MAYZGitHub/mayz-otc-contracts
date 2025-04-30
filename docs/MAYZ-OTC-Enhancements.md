@@ -1,9 +1,11 @@
 # MAYZ Trustless OTC Smart Contract - Proposed Enhancements
 
 ## Executive Summary
+
 This document outlines proposed enhancements to the MAYZ Trustless OTC Smart Contract aimed at increasing flexibility, improving market efficiency, and providing better price protection mechanisms. These enhancements build upon the existing architecture while introducing new features to better serve various trading scenarios.
 
 ## Table of Contents
+
 - [MAYZ Trustless OTC Smart Contract - Proposed Enhancements](#mayz-trustless-otc-smart-contract---proposed-enhancements)
   - [Executive Summary](#executive-summary)
   - [Table of Contents](#table-of-contents)
@@ -35,14 +37,18 @@ This document outlines proposed enhancements to the MAYZ Trustless OTC Smart Con
 ## 1. Flexible Token Issuance
 
 ### Current Limitation
+
 The current implementation only allows minting a single NFT representing the entire token deposit, which may limit trading flexibility for large positions.
 
 ### Proposed Enhancement
+
 Introduce support for minting multiple Fungible Tokens (FTs) instead of a single NFT, allowing position creators to fragment their large positions into smaller, more tradeable units.
 
 #### Implementation Details
+
 - **Smart Contract Changes**:
-```
+
+```aiken
 type OTCDatum {
     /// Existing fields
     ft_total_supply: Int,
@@ -57,6 +63,7 @@ type OTCDatum {
   - Maximum FT supply limit for efficiency
 
 #### Benefits
+
 - Improved liquidity through position fragmentation
 - More accessible trading for smaller buyers
 - Flexible exit strategies for large position holders
@@ -64,13 +71,16 @@ type OTCDatum {
 ## 2. In-Contract Exchange Mechanism
 
 ### Current Limitation
+
 OTC tokens must be traded on external marketplaces, adding complexity and potential friction to the trading process.
 
 ### Proposed Enhancement
+
 Enable direct token exchanges within the OTC contract using either fixed prices or oracle-based pricing.
 
 #### Implementation Details
-```
+
+```aiken
 type OTCDatum {
   /// Existing fields
   price_in_ada: Int,
@@ -91,6 +101,7 @@ type OracleConfig {
 ```
 
 #### Features
+
 1. **Fixed Price Trading**
    - Creator sets ADA price per token
    - Direct purchase using contract endpoints
@@ -105,9 +116,11 @@ type OracleConfig {
 ## 3. Price Protection Mechanisms
 
 ### Proposed Enhancement
+
 Implement time-based price validity and protection mechanisms to manage price volatility risks.
 
 #### Features
+
 - Automatic order suspension when price validity expires
 - Configurable price bounds for oracle-based trading
 - Grace period for price updates before order cancellation
@@ -115,12 +128,14 @@ Implement time-based price validity and protection mechanisms to manage price vo
 ## 4. Offers Contract
 
 ### Proposed Enhancement
+
 Implement a dedicated contract for managing buy offers with locked ADA collateral.
 
 > TODO: registro de parcialidad ejecutada
 
 #### Implementation Details
-```
+
+```aiken
 type OfferDatum {
   otc_token_policy_id: PolicyId,
   otc_token_name: TokenName,
@@ -143,6 +158,7 @@ type OfferStatus {
 ```
 
 #### Key Features
+
 1. **Offer Creation**
    - Lock ADA with offer price per token
    - Set desired quantity of tokens
@@ -161,12 +177,15 @@ type OfferStatus {
 ## 5. MAYZ Token Management
 
 ### Current Limitation
+
 MAYZ tokens remain locked until full position closure, limiting capital efficiency.
 
 ### Proposed Enhancement
+
 Enable MAYZ token recovery when position is closed through direct exchange. If ADA from a direct sale is present in the contract, the creator can recover their MAYZ tokens without requiring the OTC NFT, since the presence of sale proceeds indicates successful position closure.
 
 ### Benefits of Direct Exchange vs External Marketplaces
+
 The direct exchange mechanism provides a crucial advantage over traditional marketplace sales (like JPG Store). In the traditional approach, when a creator lists their OTC NFT on an external marketplace:
 
 1. The NFT can be purchased and moved from the marketplace
@@ -174,7 +193,7 @@ The direct exchange mechanism provides a crucial advantage over traditional mark
 3. As a result, the creator's MAYZ tokens remain permanently locked in the contract
 4. There is no mechanism to verify if an external sale occurred or force token claiming
 
-This creates a potential deadlock scenario where neither party can access the locked MAYZ tokens. 
+This creates a potential deadlock scenario where neither party can access the locked MAYZ tokens.
 
 By implementing direct exchange within the contract:
 
@@ -186,9 +205,11 @@ By implementing direct exchange within the contract:
 ## 6. Order and Offer Updates
 
 ### Proposed Enhancement
+
 Implement comprehensive update mechanisms for both OTC orders and offers.
 
 #### Features
+
 1. **Order Updates**
    - Price adjustments
    - Validity period extensions
