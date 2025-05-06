@@ -14,7 +14,6 @@ Milestone 4 concludes the Cardano Catalyst-funded development of the MAYZ Trustl
 - Provide a functional public-facing website (DApp)
 - Publish clear documentation and onboarding resources
 - Record close-out video & report to fulfill Catalyst requirements
-- Create educational resources to support adoption
 
 ## 🧠 Smart Contract Implementation
 
