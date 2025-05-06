@@ -21,7 +21,7 @@
     <br />
     <a href="https://mayz-1.gitbook.io/mayz-otc"><strong>Explore the Docs »</strong></a>
     <br />
-    <a href="https://github.com/MAYZGitHub/mayz-otc-dapp">View DApp Repository</a>
+    <a href="https://github.com/MAYZGitHub/mayz-otc-contracts">View DApp Repository</a>
     ·
     <a href="https://github.com/MAYZGitHub/mayz-otc-contracts/issues">Report Bug</a>
     ·

@@ -28,7 +28,7 @@
 
 
 ## Milestone 4: Release & Adoption 🚀
-- ✔️ Contract on Preprod/Mainnet
+- ✔️ Contract on Testnet (Preview)
 - ✔️ Website frontend for OTC usage
 - ✔️ Docs and demos for community
 
