@@ -19,7 +19,7 @@
   <p align="center">
     Tackling Slippage on Cardano through Smart Contracts
     <br />
-    <a href="https://mayz-1.gitbook.io/mayz-otc"><strong>Explore the Docs »</strong></a>
+    <a href="https://github.com/MAYZGitHub/mayz-otc-contracts/tree/main/docs"><strong>Explore the Docs »</strong></a>
     <br />
     <a href="https://github.com/MAYZGitHub/mayz-otc-contracts">View DApp Repository</a>
     ·
