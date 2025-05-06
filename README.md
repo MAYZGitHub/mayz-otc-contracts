@@ -41,7 +41,7 @@ To interact with these contracts through a frontend interface, please refer to t
 
 ## 📚 Documentation
 
-- [GitBook Project Docs](https://mayz-1.gitbook.io/mayz-otc)
+- [Project Docs](https://github.com/MAYZGitHub/mayz-otc-contracts/tree/main/docs)
 - [Smart Contract Deep Dive](./smart-contracts/README.md)
 - [Solutions Overview](./docs/MAYZ-OTC-Solutions.md)
 - [Architecture](./docs/MAYZ-OTC-Architecture.md)
