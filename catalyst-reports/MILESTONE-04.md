@@ -23,9 +23,12 @@ All contracts were deployed on **Cardano Mainnet** with verified hashes and addr
 |--------|------|------|------|
 | `OtcValidator.plutus` | [addr1w93kjy8vgfka66aaw2780njmjz9csxvt9k43snv7mwmvfygnwg8nw](https://cexplorer.io/address/addr1w93kjy8vgfka66aaw2780njmjz9csxvt9k43snv7mwmvfygnwg8nw) | Validator and Policy | v3 |
 | `ProtocolValidator.plutus` | [addr1wye288h4r29j40ktpu4r7zlf25e84vj58w63r5jnxp3xphgs645fj](https://cexplorer.io/address/addr1wye288h4r29j40ktpu4r7zlf25e84vj58w63r5jnxp3xphgs645fj) | Validator and Policy | v3 |
-| `Protocol.PolicyID` | [32a39ef51a8b2abecb0f2a3f0be955327ab2543bb511d253306260dd](https://cexplorer.io/policy/32a39ef51a8b2abecb0f2a3f0be955327ab2543bb511d253306260dd) | Protocol Policy ID | Mainnet |
-| `Validator.PolicyID` | [636910ec426ddd6bbd72bc77ce5b908b88198b2dab184d9edbb6c491](https://cexplorer.io/policy/636910ec426ddd6bbd72bc77ce5b908b88198b2dab184d9edbb6c491) | Validator Policy ID | Mainnet |
-| `Sample.OTC.Token` | [636910ec426ddd6bbd72bc77ce5b908b88198b2dab184d9edbb6c491.4f54432d534e454b2d313030](https://cexplorer.io/asset/asset1m3w4yj0y97fkd47tphz09fzfwy3pu6aas4hw5l) | OTC-SNEK-100 | OTC token Mainnet |
+
+| Token | PolicyID/Assetname | Type | Network |
+|--------|------|------|------|
+| `Protocol` | [32a39ef51a8b2abecb0f2a3f0be955327ab2543bb511d253306260dd](https://cexplorer.io/policy/32a39ef51a8b2abecb0f2a3f0be955327ab2543bb511d253306260dd) | Protocol Policy ID | Mainnet |
+| `Validator` | [636910ec426ddd6bbd72bc77ce5b908b88198b2dab184d9edbb6c491](https://cexplorer.io/policy/636910ec426ddd6bbd72bc77ce5b908b88198b2dab184d9edbb6c491) | Validator Policy ID | Mainnet |
+| `OTC-SNEK-100` | [636910ec426ddd6bbd72bc77ce5b908b88198b2dab184d9edbb6c491.4f54432d534e454b2d313030](https://cexplorer.io/asset/asset1m3w4yj0y97fkd47tphz09fzfwy3pu6aas4hw5l) | OTC token | Mainnet |
 
 ✔️ Searchable on [Cexplorer](https://cexplorer.io/) and [Cardanoscan](https://cardanoscan.io/) with their respective script hashes and addresses.
 
