@@ -68,6 +68,7 @@ Live sites:
 - ✅ GitHub Repo: <https://github.com/MAYZGitHub/mayz-otc-dapp>
 - ✅ Final Demonstration Video: <https://www.youtube.com/watch?v=mfEXdJ-sYZY>
 - ✅ Live Cardano Mainnet site: <https://otc.mayz.io>
+- ✅ Close Out Report: <https://docs.google.com/document/d/1pHb-QT5XRtmgv34d59-rkA_PKDrSHBvMj8qLljnJ-Xg/edit?tab=t.0>
 
 The video showcases:
 
