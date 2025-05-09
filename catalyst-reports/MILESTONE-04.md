@@ -81,7 +81,7 @@ The video showcases:
 
 OPTION 1: To test the live Cardano Mainnet site:
 
-1. Go to <https://otz.mayz.io>
+1. Go to <https://otc.mayz.io>
 2. Follow the on-screen instructions, site is running at MVP level at the moment.
 3. You can then:
       - Create a protocol
