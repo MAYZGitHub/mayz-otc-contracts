@@ -54,7 +54,7 @@ These contracts are deployed and fully functional. They were tested using emulat
 
 Each contract entrypoint is documented with arguments, expected datum format, and Plutus validation logic. All redeemers are unit-tested in emulator mode and validated for  Preview Tesnet deployment.
 
-## 🌐 DApp and Code Repositories
+## 🌐 DApp, Code Repositories and Sites
 
 Repositories
 - DApp (Frontend): <https://github.com/MAYZGitHub/mayz-otc-dapp>
