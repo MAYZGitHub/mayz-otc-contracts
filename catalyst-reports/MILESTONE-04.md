@@ -17,26 +17,16 @@ Milestone 4 concludes the Cardano Catalyst-funded development of the MAYZ Trustl
 
 ## 🧠 Smart Contract Implementation
 
-All contracts were deployed on **Cardano Preview Testnet** with verified hashes and addresses:
+All contracts were deployed on **Cardano Mainnet** with verified hashes and addresses:
 
 | Script | Address | Type | Plutus Version |
 |--------|------|------|------|
-| `OtcValidator.plutus` | [addr_test1wprx...ct28](https://preview.cexplorer.io/address/addr_test1wprx36hdsvucyjp88t9rugghypfv3un89gxuz64k3p00uvcj7ct28) | Validator and Policy | v3 |
-| `ProtocolValidator.plutus` | [addr_test1wr8g...vgk8](https://preview.cexplorer.io/address/addr_test1wr8g2ukhvyntq3z2ku05cxyyn9ewdszfgayzq6vy59ddtesnnvgk8) | Validator and Policy | v3 |
+| `OtcValidator.plutus` | [addr1w93kjy8vgfka66aaw2780njmjz9csxvt9k43snv7mwmvfygnwg8nw](https://cexplorer.io/address/addr1w93kjy8vgfka66aaw2780njmjz9csxvt9k43snv7mwmvfygnwg8nw) | Validator and Policy | v3 |
+| `ProtocolValidator.plutus` | [addr1wye288h4r29j40ktpu4r7zlf25e84vj58w63r5jnxp3xphgs645fj](https://cexplorer.io/address/addr1wye288h4r29j40ktpu4r7zlf25e84vj58w63r5jnxp3xphgs645fj) | Validator and Policy | v3 |
 
 ✔️ Searchable on [Cexplorer](https://cexplorer.io/) and [Cardanoscan](https://cardanoscan.io/) with their respective script hashes and addresses.
 
-These contracts are deployed and fully functional. They were tested using emulator mode, and then on-chain via the Preview Testnet. This environment provides sufficient validation for trustless OTC functionality, including minting, locking, claiming, and refund logic.
-
-### ❗ Why We Chose Not to Deploy to Mainnet
-
-After careful evaluation, we opted not to deploy on Mainnet at this stage. Our reasoning is:
-
-- Testnet deployment proves full end-to-end functionality in a live Cardano network environment.
-- Safety and repeatability were prioritized for onboarding, testing, and educational use.
-- Mainnet deployment should only occur once broader usage or liquidity demands it. Right now, developer and community evaluation are better served in Testnet.
-
-Contracts are Mainnet-ready and easily deployable. However, for Catalyst goals — validation, accessibility, documentation, and transparency — the current setup fully satisfies the milestone.
+These contracts are deployed and fully functional. They were tested using emulator mode, on-chain via the Preview Testnet and finally in the Cardano Mainnet. This fulfills validation for trustless OTC functionality, including minting, locking, claiming, and refund logic.
 
 ## 🔧 Components Completed
 
@@ -45,6 +35,7 @@ Contracts are Mainnet-ready and easily deployable. However, for Catalyst goals �
 - ✅ SmartDB backend integrated and operational
 - ✅ NFT-based representation of OTC positions
 - ✅ Emulator and Testnet test flows working as expected
+- ✅ Mainnet deployment working as expected
 
 ## 📄 Technical Documentation
 
@@ -59,13 +50,18 @@ Each contract entrypoint is documented with arguments, expected datum format, an
 
 ## 🌐 DApp and Code Repositories
 
+Repositories
 - DApp (Frontend): <https://github.com/MAYZGitHub/mayz-otc-dapp>
 - Smart Contracts: <https://github.com/MAYZGitHub/mayz-otc-contracts> [this repo]
+
+Live sites:
+- Mainnet site: <https://otc.mayz.io>
 
 ## 📸 Evidence of Completion
 
 - ✅ GitHub Repo: <https://github.com/MAYZGitHub/mayz-otc-dapp>
 - ✅ Final Demonstration Video: <https://www.youtube.com/watch?v=mfEXdJ-sYZY>
+- ✅ Live Cardano Mainnet site: <https://otc.mayz.io>
 
 The video showcases:
 
@@ -77,7 +73,18 @@ The video showcases:
 
 ## 📄 How to Use (For Reviewers / Community)
 
-To run the DApp locally:
+OPTION 1: To test the live Cardano Mainnet site:
+
+1. Go to <https://otz.mayz.io>
+2. Follow the on-screen instructions, site is running at MVP level at the moment.
+3. You can then:
+      - Create a protocol
+      - Create OTC positions locking any supported token
+      - Claim or cancel OTC positions
+      - View your positions represented via NFTs
+
+
+OPTION 2: To run the DApp locally:
 
 1. Clone the repository:
    ```
@@ -124,8 +131,9 @@ This milestone demonstrates:
 - Public open-source release
 - Onboarding support via demo video and walkthrough
 - Verified on-chain deployment (Testnet)
+- Verified on-chain deployment (Mainnet) and live MVP dApp site
 
-➡️ We believe this satisfies both the letter and intent of the milestone requirements, even without a Mainnet deployment. The current setup maximizes accessibility, verifiability, and safety.
+➡️ We believe this satisfies both the letter and intent of the milestone requirements. The current setup maximizes accessibility, verifiability, and safety.
 
 ➡️ The implementation focuses on simplicity, transparency, and extensibility — prioritizing individual users while supporting future protocol-level OTC models.
 
