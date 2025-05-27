@@ -1,363 +1,180 @@
-MAYZ Trustless OTC Protocol Close-Out Report
-Project Metadata
-Name: MAYZ Trustless OTC Protocol
+# MAYZ Trustless OTC Protocol Close-Out Report
 
+---
 
-Project Number: 1200222
+## 🧾 Project Overview
 
+**Project Name**: MAYZ Trustless OTC Protocol
+**Project Number**: 1200222
+**IdeaScale Link**: [https://cardano.ideascale.com/c/cardano/idea/120544](https://cardano.ideascale.com/c/cardano/idea/120544)
+**Project Manager**: Agustín Franchella
+**Team Members**: Diego Torres Borda, Federico Ledesma Calatayud, Diego Macchi, Manuel Padilla, Alfred Vilsmeier, Luis Restrepo
+**Start Date**: July 15, 2024
+**Completion Date**: May 9, 2025
 
-Project URL: https://cardano.ideascale.com/c/cardano/idea/120544
+---
 
+## 🎯 Challenge KPIs and Outcomes
 
-Project Manager: Agustín Franchella
+**Challenge Area**: Products & Integrations That Drive Adoption
 
+* **DApp Released**: The OTC protocol has been deployed on the Cardano Mainnet.
+* **Open Source Code**: All smart contracts and the frontend application are available on GitHub.
+* **Ecosystem Support**: We created onboarding guides, a demo video, and extensive public documentation.
 
-Team: Diego Torres Borda, Federico Ledesma Calatayud, Diego Macchi, Manuel Padilla, Alfred Vilsmeier, Luis Restrepo
+---
 
+## ✅ Project KPIs by Milestone
 
-Start Date: July 15, 2024
+1. **Research Liquidity Challenges**: Explored pain points within the Cardano DeFi landscape (Milestone 1).
+2. **Architecture & Docs**: Delivered architecture diagrams, flowcharts, and a complete technical README (Milestone 2).
+3. **Smart Contracts in Aiken**: Built and fully tested smart contract suite using Aiken (Milestone 3).
+4. **Testnet Deployment**: Successfully deployed contracts and DApp to Cardano Testnet (Milestone 4).
+5. **Final Delivery**: Deployed Mainnet version with demo video and open-source documentation.
 
+📌 **Proof of Achievement**: [View on Milestones Tracker](https://milestones.projectcatalyst.io/projects/1200222)
 
-Completion Date: May 9, 2025
+---
 
+## 🌟 Highlights & Achievements
 
-Challenge KPIs and How Addressed
-Products & Integrations That Drive Adoption
+* Created the first trustless OTC protocol on Cardano using NFT-bound trade offers.
+* Adopted Aiken and Plutus V3, contributing to modern smart contract development.
+* Engaged the Cardano community in testing and validating the protocol.
+* Delivered everything open-source, from smart contracts to onboarding tools.
 
+---
 
-dApps & tools released: Full OTC DApp deployed on Cardano Mainnet.
+## 🧠 Key Learnings
 
+* Aiken enables faster iteration and smoother testing compared to legacy Plutus.
+* Starting with a clear architecture minimized rework and errors later.
+* Phased deployment—testnet to Mainnet—gave us valuable feedback loops.
+* Strong documentation played a key role in developer and user adoption.
 
-Open-source deliverables: All smart contracts and UI repositories released.
+---
 
+## 🔭 Next Steps
 
-Onboarding & ecosystem expansion: Demo video, onboarding guides, and complete documentation provided.
+* Perform a comprehensive security audit.
+* Continue planning for Mainnet expansion based on user demand.
+* Add integrations with popular wallets (Lace, Eternl) and Cardano DEXs.
+* Seek partners and funding to expand liquidity support and extend use cases.
 
+---
 
-Project KPIs and How Addressed
-Research liquidity challenges: Completed in Milestone 1.
+## 💬 Final Thoughts
 
+The MAYZ Trustless OTC Protocol represents a modular, reusable system for off-chain liquidity matching. By combining NFTs and validator logic into a seamless user experience, we’ve created a new way to perform OTC trades transparently and securely. Thanks to Project Catalyst and the Cardano community for making this possible.
 
-Technical architecture & documentation: Completed in Milestone 2; diagrams, flowcharts, README.
+---
 
+## 📂 Project Assets
 
-Implement smart contracts in Aiken: Completed and tested with 100% pass in Milestone 3.
+* **Smart Contracts Repository**: [GitHub](https://github.com/MAYZGitHub/mayz-otc-contracts)
+* **Frontend Application**: [GitHub](https://github.com/MAYZGitHub/mayz-otc-dapp)
+* **Milestone Reports**: Available in `catalyst-reports/` directory in the repo
+* **Documentation**: See README and `docs/` folder
+* **Demo Video**: [Watch on YouTube](https://www.youtube.com/watch?v=LGw46_sO11k)
 
+---
 
-Deploy DApp & Contracts to Testnet: Achieved in Milestone 4.
+## 🧩 Functional Documentation
 
+### 1. Smart Contract Functionality Explained
 
-Deliver code, demo video, documentation: Completed.
+#### `create_offer`
 
+* **Purpose**: Starts a new OTC deal by locking the user’s tokens and minting a unique NFT.
+* **How it works**: The user defines what they are offering and what they want in return. This data is stored in a smart contract UTxO.
+* **Result**: The offer is now visible and active on-chain.
 
-Evidence
-Proof of Achievement: https://milestones.projectcatalyst.io/projects/1200222
-Key Achievements
-Implemented a fully trustless OTC protocol with NFT-based positions.
+#### `accept_offer`
 
+* **Purpose**: A counterparty accepts the offer by providing the required tokens.
+* **How it works**: The taker sends the ask tokens and receives the offered tokens in return. The offer NFT is burned.
+* **Result**: The deal is settled and closed.
 
-Adopted Aiken and Plutus V3, aligning with Cardano’s latest smart contract evolution.
+#### `cancel_offer`
 
+* **Purpose**: Allows the original offer creator to cancel and reclaim their tokens.
+* **How it works**: The user must prove ownership via signature and the offer NFT.
+* **Result**: The offer is closed and funds returned.
 
-Delivered a working DApp connected to Cardano Mainnet.
+#### `redeem_after_timeout`
 
+* **Purpose**: Acts as a safety net to recover funds if the offer expires.
+* **How it works**: After the deadline, the original offerer can retrieve their tokens.
 
-Engaged community testers, developers, and SPOs.
+**NFT Minting Logic**:
 
+* Minted NFT uniquely represents the offer.
+* Enforced to be one per offer.
+* Token name = `sha2_256(OfferDatum)`.
 
-Released all deliverables open-source via GitHub.
+---
 
+### 2. Security and Error Handling
 
-Key Learnings
-Aiken accelerates development and testing, offering better developer UX than traditional Plutus.
+* **Authorized Actions**: Only the offer creator can cancel. Acceptors must own the NFT.
+* **Deadline Enforcement**: Offers cannot be accepted or cancelled after their expiration slot.
+* **Value Checks**: Asset amounts must exactly match offer terms.
+* **Failure Handling**: Invalid or expired actions automatically revert and preserve funds.
+* **Off-Chain Checks**: Wallet interface checks validity before transactions are submitted.
 
+---
 
-Early architectural clarity reduces downstream errors.
+### 3. Contract Independence
 
+* The OTC system is completely self-contained.
+* **No reliance on external contracts or oracles**.
+* **Admin/Emergency Tokens**:
 
-Mainnet deployment is best staged after community testing.
+  * Minted using `cardano-cli` with a short expiry window.
+  * Cannot be re-minted or burned; they cannot control user funds.
 
+---
 
-Documentation and onboarding support were crucial for feedback.
+### 4. Wallet & Ecosystem Integration
 
+* **Wallet Support**: Lace, Eternl, Nami, Gero (via Lucid & CIP-30).
+* **Endpoints**:
 
-Next Steps
-Conduct additional security audits.
+  * `/api/otc/create`, `/claim`, `/close`, `/cancel`
+  * Support full trade lifecycle: create, fulfill, close, cancel
+* **Token Compatibility**:
 
+  * Uses CIP-20 for tokens, CIP-25 for NFT metadata
+  * CIP-47 inline datums and CIP-68 reference scripts improve cost-efficiency and indexing
+* **Marketplace Ready**: NFTs can be displayed and traded on Cardano NFT platforms.
 
-Plan Mainnet deployment based on adoption signals.
+---
 
+### 5. Upgrade Path & Versioning
 
-Integrate with wallets (Lace, Eternl) and DEXs for deeper ecosystem utility.
+* **Approach**: Every offer is managed individually, avoiding central dependencies.
+* **Current Version**: `validatorV1` published in Aiken source
+* **How Updates Work**:
 
+  * Deploy `validatorV2` in future versions
+  * Update script hash in off-chain config
+  * No disruption to offers made under `validatorV1`
+* **Governance Tokens**:
 
-Seek partnership/funding to extend functionality and liquidity sourcing.
+  * Immutable, no administrative override or upgrade backdoor
 
+---
 
-Final Thoughts
-MAYZ Trustless OTC is a pioneering effort in solving off-chain liquidity pain points within Cardano. By combining NFTs, validator logic, and a simple UI, we’ve built a modular and reusable system. We appreciate Catalyst support and look forward to community experimentation and adoption.
-Project Sources & Documents
-Smart Contracts Repo: https://github.com/MAYZGitHub/mayz-otc-contracts
+## 📣 Documentation & Community Links
 
+* **Final Report**: [MAYZ-OTC-CloseOut.md on GitHub](https://github.com/MAYZGitHub/mayz-otc-contracts/blob/main/docs/MAYZ-OTC-CloseOut.md)
 
-Frontend DApp Repo: https://github.com/MAYZGitHub/mayz-otc-dapp
+### Connect with Us
 
+* [Instagram](https://www.instagram.com/mayz.protocol/)
+* [Discord](https://discord.com/invite/6xkbynuNrj)
+* [Medium](https://medium.com/@MAYZ.io)
+* [X / Twitter](https://x.com/MAYZProtocol)
+* [Website](https://mayz.io)
 
-Milestone Reports: Included in catalyst-reports/ folder in the contracts repo
-
-
-Documentation: See main README and docs/ directory in contracts repo
-
-
-Close-out Video
-https://www.youtube.com/watch?v=LGw46_sO11k
-
-Functional Documentation
-1. Smart Contract Function Breakdown
-create_offer
-Purpose: Mint NFT & lock offered tokens.
-
-
-Inputs:
-
-
-OfferDatum fields: offerer: PubKeyHash, offered_asset: (PolicyID, AssetName, Integer), ask_asset: (PolicyID, AssetName, Integer), deadline: Slot
-
-
-Outputs:
-
-
-UTxO at script address with locked tokens and NFT
-
-
-State Changes:
-
-
-Mints one NFT via OtcTokenMint policy
-
-
-Locks offered tokens in validator UTxO
-
-
-accept_offer
-Purpose: Exchange offered tokens for ask tokens.
-
-
-Inputs:
-
-
-Redeemer: AcceptOffer
-
-
-OfferDatum from UTxO
-
-
-Offer NFT (to burn)
-
-
-Ask tokens from taker
-
-
-Outputs:
-
-
-Sends offered tokens to taker
-
-
-Sends ask tokens to offerer
-
-
-State Changes:
-
-
-Burns NFT
-
-
-Consumes UTxO; transfers assets
-
-
-cancel_offer
-Purpose: Allow offerer to cancel and retrieve tokens.
-
-
-Inputs:
-
-
-Redeemer: CancelOffer
-
-
-OfferDatum from UTxO
-
-
-Offerer’s signature
-
-
-Offer NFT
-
-
-Outputs:
-
-
-Returns offered tokens to offerer
-
-
-State Changes:
-
-
-Burns NFT
-
-
-Consumes UTxO; returns assets
-
-
-redeem_after_timeout (safety)
-Purpose: Recover tokens after deadline.
-
-
-Inputs:
-
-
-Similar to cancel but enforces txInfo.validRange ⊆ (−∞, deadline]
-
-
-Outputs: Returns tokens
-
-
-State Changes: Consumes UTxO
-
-
-NFT Minting Policy (OtcTokenMint.aiken):
-Mints exactly one NFT per OfferDatum
-
-
-Token name: sha2_256(OfferDatum)
-
-
-Only in same Tx as locking UTxO
-
-
-2. Error & Security Handling
-Redeemer Enforcement: pattern-match on AcceptOffer/CancelOffer; invalid redeemers fail.
-
-
-Signature Checks: CancelOffer requires datum.offerer ∈ txInfo.signatories; AcceptOffer requires NFT.
-
-
-NFT Policy Safeguards: Enforces exact NFT count/name in minting; tests verify mint failures.
-
-
-Expiration Logic: Enforces txInfo.validRange ⊆ (−∞, deadline]; tests cover post-deadline rejection.
-
-
-Value Preservation: Checks exact asset amounts both in accept and cancel.
-
-
-Reversion Behavior: Any unmet condition reverts Tx.
-
-
-Off-Chain Checks: Pre-flight validations mirror on-chain, with clear UI error messages.
-
-
-3. Dependency on Other MAYZ Contracts
-Self-contained: no external MAYZ contracts.
-
-
-Emergency/Admin tokens minted off-chain via cardano-cli with fixed expiry; cannot be minted/burned further.
-
-
-Future validators (validatorV2) can be added without other contracts; off-chain config selects version.
-
-
-4. External Interface Details
-Wallets (CIP-30)
-Lucid with CIP-30 wallets: Lace, Eternl, Nami, Gero.
-
-
-Connect via walletStore.getLucid() after enable().
-
-
-Endpoints
-Next.js API at /api/otc:
-
-
-OTC_CREATE → CreateOTCTxParams (protocol_id, od_token_policy_id, od_token_tn, od_token_amount)
-
-
-OTC_CLAIM → ClaimOTCTxParams (protocol_id, otcDbId)
-
-
-OTC_CLOSE → CloseOTCTxParams (protocol_id, otcDbId)
-
-
-OTC_CANCEL → CancelOTCTxParams (protocol_id, otcDbId)
-
-
-Handled by OTCBackEndApplied using Lucid’s TxBuilder.
-
-
-Token Standards
-Offered/ask: any CIP-20.
-
-
-Offer NFT: CIP-25 metadata:
-
-
-name, description, properties (offered_amount, ask_amount, deadline, offerer)
-
-
-Inline datums (CIP-47) and reference scripts (CIP-68).
-
-
-DEX & Marketplace
-Off-chain code can integrate DEXs for liquidity.
-
-
-Offer NFTs listable on Cardano NFT marketplaces.
-
-
-5. Smart Contract Upgrade Plan
-Rationale
-Shift to individualized UTxO+NFT approach enables per-offer auditability, reduces dependencies, simplifies versioning.
-On-Chain Version Tagging
-validatorV1 exposed in ProtocolValidator.aiken; future validatorV2 added in the same module.
-
-
-Off-Chain Version Selection
-VALIDATOR_VERSION = "v1" in DApp config; update value and redeploy for upgrades.
-
-
-Deployment & Roll-Out
-Develop & test new validator; run full test suite.
-
-
-Compile new script hash; update DApp config; redeploy.
-
-
-(Optional) Update on-chain registry UTxO if used.
-
-
-Existing offers remain under validatorV1 unless migrated.
-
-
-Governance
-No admin backdoor; emergency/admin tokens immutable markers only.
-6. Documentation Publication & Social Links
-Location: docs/MAYZ-OTC-CloseOut.md in mayz-otc-contracts repo.
-
-
-Channels:
-
-
-Instagram: https://www.instagram.com/mayz.protocol/
-
-
-Discord: https://discord.com/invite/6xkbynuNrj
-
-
-Medium: https://medium.com/@MAYZ.io
-
-
-X: https://x.com/MAYZProtocol
-
-
-Website: https://mayz.io
+---
