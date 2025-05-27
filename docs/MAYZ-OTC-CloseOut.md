@@ -10,7 +10,7 @@
 **Project Manager**: Agustín Franchella\
 **Team Members**: Diego Torres Borda, Federico Ledesma Calatayud, Diego Macchi, Manuel Padilla, Alfred Vilsmeier, Luis Restrepo\
 **Start Date**: July 15, 2024\
-**Completion Date**: May 9, 2025
+**Completion Date**: May 27, 2025
 
 ---
 
