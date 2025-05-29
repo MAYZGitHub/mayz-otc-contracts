@@ -75,7 +75,7 @@ The MAYZ Trustless OTC Protocol represents a modular, reusable system for off-ch
 - **Frontend Application**: https://github.com/MAYZGitHub/mayz-otc-dapp  
 - **Milestone Reports**: Available in `catalyst-reports/` directory in the repo  
 - **Documentation**: See README and `docs/` folder  
-- **Demo Video**: https://www.youtube.com/watch?v=LGw46_sO11k
+- **Demo Video**: https://youtu.be/nWqTrBFGd-4
 
 ---
 
